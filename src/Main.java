@@ -21,7 +21,7 @@ enum taskActions {
 public class Main {
 
     // Global values
-
+    public static Tasks mainTaskList = new Tasks();
     public static void main(String[] args) {
         System.out.println("Hello, World! \n");
 
@@ -39,8 +39,8 @@ public class Main {
         switch (a) {
             case SHOW:
                 System.out.println("Showing tasks: \n");
-                Tasks.showTasks();
-                Tasks.presentTaskActions();
+                mainTaskList.showTasks();
+                mainTaskList.presentTaskActions();
                 break;
             case EXIT:
                 System.out.println("Exiting app");

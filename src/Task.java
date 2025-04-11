@@ -11,19 +11,15 @@ enum taskStatus {
 
 public class Task {
 
-    public static String taskName = "";
-    public static String taskStatus = "";
-    public Task(String name, String status) {
-        taskName = name;
-        taskStatus = status;
-    }
+    public String taskName = "";
+    public String taskStatus = "";
 
-    public static void changeTask(String name, String status) {
+    public void changeTask(String name, String status) {
         if(!name.equals(Libs.NOCHANGE)) {
-            taskName = name;
+            this.taskName = name;
         }
         if (!status.equals(Libs.NOCHANGE)) {
-            taskStatus = status;
+            this.taskStatus = status;
         }
     }
 }
