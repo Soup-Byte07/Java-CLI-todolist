@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Tasks {
-    public List<Task> tasks = new ArrayList<Task>();
+    public List<Task> tasks = new ArrayList<>();
     public String selectTaskMessage = "Please select a task! Should be the index of the task or ID. If you want to go back, please enter -1.";
     public void showTasks() {
         int taskIndex = 0;
@@ -14,84 +14,121 @@ public class Tasks {
     }
 
     private void deleteTask(int taskIndex) {
-        tasks.remove(taskIndex);
-        System.out.println("Deleted task: " + taskIndex);
+        try {
+            tasks.remove(taskIndex);
+            System.out.println("Deleted task: " + taskIndex);
+        } catch (Exception e) {
+            System.out.println("Can't delete something that doesn't exist/");
+        }
     }
 
     private void addTask() {
-        Task newTask = new Task();
-        System.out.println("Please enter task status!\n");
-        for (taskStatus status : taskStatus.values()) {
-            System.out.println(status.getString() + "," );
+        try {
+            System.out.println("Please enter task status!\n");
+            for (taskStatus status : taskStatus.values()) {
+                System.out.println(status.getString() + "," );
+            }
+            taskStatus userInputTaskStatus = taskStatus.valueOf(Libs.Input.next().toUpperCase());
+            System.out.println("Enter task name.");
+            String userInputTaskName = Libs.captureSentence();
+            Task newTask = new Task(userInputTaskName, userInputTaskStatus);
+            tasks.add(newTask);
+        } catch (RuntimeException e) {
+            System.out.println("Failed to add new task. Did you enter the task status correctly?");
         }
-        String userInputTaskStatus = Libs.Input.next();
-        System.out.println("Enter task name.");
-        String userInputTaskName = Libs.captureSentence();
-        newTask.changeTask(userInputTaskName, userInputTaskStatus);
-        tasks.add(newTask);
-
     }
 
     private void editTask(int index) {
-        Task selectedTask = tasks.get(index);
-        System.out.println("If you don't want to change the name or status. Just enter noch!");
-        System.out.println("Please enter task status!");
-        for (taskStatus status : taskStatus.values()) {
-            System.out.println(status.getString() + "," );
+        try {
+
+            Task selectedTask = tasks.get(index);
+            System.out.println("If you don't want to change the name or status. Just enter " + Libs.NOCHANGE);
+            System.out.println("Please enter task status!");
+            for (taskStatus status : taskStatus.values()) {
+                System.out.println(status.getString() + "," );
+            }
+
+            taskStatus userInputTaskStatus = taskStatus.valueOf(Libs.Input.next().toUpperCase());
+
+            System.out.println("Please enter task name!");
+            String userInputTaskName = Libs.captureSentence();
+            if (selectedTask != null) {
+                selectedTask.changeTask(userInputTaskName, userInputTaskStatus);
+            }
+        } catch (Exception e) {
+            System.out.println("Failed to edit task");
         }
-        String userInputTaskStatus = Libs.Input.next("Enter task name.");
-        String userInputTaskName = Libs.captureSentence();
-        System.out.println(userInputTaskName + " " + userInputTaskStatus);
-        selectedTask.changeTask(userInputTaskName, userInputTaskStatus);
+    }
+
+    private void finishTask(int index) {
+        try {
+            Task selectedTask = tasks.get(index);
+            selectedTask.taskStat = Libs.CHECK_OFF_TASK;
+        } catch (Exception e) {
+            System.out.println("Can't finish something that doesn't exist");
+        }
     }
 
     private void showTask(int index) {
-        Task selectedTask = tasks.get(index);
-        printTask(index, selectedTask);
+        try {
+            Task selectedTask = tasks.get(index);
+            printTask(index, selectedTask);
+        } catch(IndexOutOfBoundsException e) {
+            System.out.println("The task does not exist!");
+        }
     }
 
     private void printTask(int index, Task singleTask) {
-        System.out.printf("%d - %s - %s \n", index, singleTask.taskName, singleTask.taskStatus);
-    };
+        System.out.printf("%d - %s - %s \n", index, singleTask.taskName, singleTask.taskStat);
+    }
 
     public void presentTaskActions() {
-        System.out.println("Please enter one of the following task actions!");
         for (taskActions action : taskActions.values()) {
             System.out.println(action.getString() + "," );
         }
         String userInputTask = Libs.Input.next();
-        taskActions taskAct = taskActions.valueOf(userInputTask.toUpperCase());
-
-        switch (taskAct) {
-            case SHOWALL:
-                showTasks();
-                presentTaskActions();
-                break;
-            case SHOW:
-                int showSelectedTask = Libs.returnUserInputNumber(selectTaskMessage);
-                if(showSelectedTask != -1) showTask(showSelectedTask);
-                presentTaskActions();
-                break;
-            case ADD:
-                System.out.println("Adding Task\n");
-                addTask();
-                presentTaskActions();
-                break;
-            case EDIT:
-                System.out.println("Editing task");
-                int editSelectedTask = Libs.returnUserInputNumber(selectTaskMessage);
-                if(editSelectedTask != -1) editTask(editSelectedTask);
-                presentTaskActions();
-                break;
-            case DELETE:
-                System.out.println("Deleting Task");
-                int deleteSelectedTask = Libs.returnUserInputNumber(selectTaskMessage);
-                if(deleteSelectedTask != -1) deleteTask(deleteSelectedTask);
-                presentTaskActions();
-                break;
-            case BACK:
-                System.out.println("Going back to main menu");
-                break;
+        try {
+            taskActions taskAct = taskActions.valueOf(userInputTask.toUpperCase());
+            switch (taskAct) {
+                case SHOW_ALL:
+                    showTasks();
+                    presentTaskActions();
+                    break;
+                case SHOW:
+                    int showSelectedTask = Libs.returnUserInputNumber(selectTaskMessage);
+                    if (showSelectedTask >= 0) showTask(showSelectedTask);
+                    presentTaskActions();
+                    break;
+                case ADD:
+                    System.out.println("Adding Task\n");
+                    addTask();
+                    presentTaskActions();
+                    break;
+                case FINISH:
+                    System.out.println("Finishing Task\n");
+                    int finishSelectedTask = Libs.returnUserInputNumber(selectTaskMessage);
+                    if (finishSelectedTask >= 0) finishTask(finishSelectedTask);
+                    presentTaskActions();
+                    break;
+                case EDIT:
+                    System.out.println("Editing task");
+                    int editSelectedTask = Libs.returnUserInputNumber(selectTaskMessage);
+                    if (editSelectedTask >= 0) editTask(editSelectedTask);
+                    presentTaskActions();
+                    break;
+                case DELETE:
+                    System.out.println("Deleting Task");
+                    int deleteSelectedTask = Libs.returnUserInputNumber(selectTaskMessage);
+                    if (deleteSelectedTask >= 0) deleteTask(deleteSelectedTask);
+                    presentTaskActions();
+                    break;
+                case EXIT:
+                    System.out.println("Exiting tasks.");
+                    break;
+            }
+        } catch (IllegalArgumentException e) {
+            System.out.println("Command: " + userInputTask + " doesn't exist!");
+            presentTaskActions();
         }
     }
 }

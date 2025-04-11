@@ -1,50 +1,22 @@
-enum mainActions {
-    SHOW ,
-    EXIT ;
-    public String getString() {
-        return this.toString().toLowerCase();
-    }
-}
-
 enum taskActions {
-    SHOWALL,
+    SHOW_ALL,
     SHOW,
     EDIT,
     ADD,
+    FINISH,
     DELETE,
-    BACK;
+    EXIT;
     public String getString() {
         return this.toString().toLowerCase();
     }
 }
 
 public class Main {
-
-    // Global values
     public static Tasks mainTaskList = new Tasks();
     public static void main(String[] args) {
         System.out.println("Hello, World! \n");
-
-        System.out.println(Libs.NOCHANGE);
-        System.out.println("Please enter one of the following inputs!");
-        for (mainActions action : mainActions.values()) {
-            System.out.println(action.getString() + "," );
-        }
-
-        String action = Libs.Input.next();
-        presentActions(mainActions.valueOf(action.toUpperCase()));
-    }
-
-    public static void presentActions(mainActions a) {
-        switch (a) {
-            case SHOW:
-                System.out.println("Showing tasks: \n");
-                mainTaskList.showTasks();
-                mainTaskList.presentTaskActions();
-                break;
-            case EXIT:
-                System.out.println("Exiting app");
-                break;
-        }
+        System.out.println("Don't save code is: " +Libs.NOCHANGE);
+        mainTaskList.showTasks();
+        mainTaskList.presentTaskActions();
     }
 }
