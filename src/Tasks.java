@@ -21,7 +21,6 @@ public class Tasks {
                 String line = Libs.reader.readLine();
 
                 while (line != null) {
-                    System.out.println(line);
                     if (!line.isEmpty()) {
                         String[] words = line.split(" \\$ ");
                         String taskName = words[0];
@@ -42,12 +41,18 @@ public class Tasks {
     }
 
     public void showTasks() {
-        int taskIndex = 0;
+        int taskIndex = -1;
         System.out.println("The following tasks:  \n");
-        for (Task singleTask : tasks) {
-            singleTask.printTask(taskIndex);
-            taskIndex++;
+
+        if(tasks.size() == 0) {
+            System.out.println("--None--");
+        } else {
+            for (Task singleTask : tasks) {
+                taskIndex++;
+                singleTask.printTask(taskIndex);
+            }
         }
+        System.out.println("\n");
     }
 
     private void deleteTask(int taskIndex) {
@@ -65,6 +70,7 @@ public class Tasks {
             for (taskStatus status : taskStatus.values()) {
                 System.out.print(status.getString() + ", " );
             }
+            System.out.print("\n");
             taskStatus userInputTaskStatus = taskStatus.valueOf(Libs.Input.next().toUpperCase());
             System.out.println("Enter task name.");
             String userInputTaskName = Libs.captureSentence();
@@ -85,7 +91,7 @@ public class Tasks {
             for (taskStatus status : taskStatus.values()) {
                 System.out.print(status.getString() + ", " );
             }
-
+            System.out.print("\n");
             taskStatus userInputTaskStatus = taskStatus.valueOf(Libs.Input.next().toUpperCase());
 
             System.out.println("Please enter task name!");
@@ -121,6 +127,7 @@ public class Tasks {
         for (taskActions action : taskActions.values()) {
             System.out.print(action.getString() + ", " );
         }
+        System.out.print("\n");
         String userInputTask = Libs.Input.next();
         try {
             taskActions taskAct = taskActions.valueOf(userInputTask.toUpperCase());

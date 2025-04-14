@@ -19,8 +19,6 @@ public class Main {
 
         mainTaskList = new Tasks("tasks_0.txt");
 
-
-
         mainTaskList.showTasks();
         mainTaskList.presentTaskActions();
     }
