@@ -1,14 +1,51 @@
 import java.util.ArrayList;
-import java.util.List;
+import java.io.File;
+import java.io.FileReader;
+import java.io.BufferedReader;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 public class Tasks {
-    public List<Task> tasks = new ArrayList<>();
+    public ArrayList<Task> tasks = new ArrayList<>();
     public String selectTaskMessage = "Please select a task! Should be the index of the task or ID. If you want to go back, please enter -1.";
+    public File importedFile;
+    Tasks(String fileName) {
+        try {
+            String taskDir = System.getProperty("user.dir")  + "\\" + fileName;
+            System.out.println("Task File: "+ taskDir);
+            File taskFile = new File(taskDir);
+            importedFile = taskFile;
+            if (taskFile.exists()) {
+                Libs.reader = new BufferedReader(new FileReader(fileName));
+                String line = Libs.reader.readLine();
+
+                while (line != null) {
+                    System.out.println(line);
+                    if (!line.isEmpty()) {
+                        String[] words = line.split(" \\$ ");
+                        String taskName = words[0];
+                        taskStatus taskStat = taskStatus.valueOf(words[1].toUpperCase());
+                        Task importedTask = new Task(taskName, taskStat);
+                        tasks.add(importedTask);
+                    }
+                    line = Libs.reader.readLine();
+                }
+            }
+        } catch(FileNotFoundException error) {
+            System.out.println("The File does not exist: " + error);
+        } catch (IllegalArgumentException eError) {
+            System.out.println("Something went wrong when importing the file: " + eError);
+        } catch(IOException ioError) {
+            System.out.println("Something went wrong with I/O: " + ioError);
+        }
+    }
+
     public void showTasks() {
         int taskIndex = 0;
         System.out.println("The following tasks:  \n");
         for (Task singleTask : tasks) {
-            printTask(taskIndex, singleTask);
+            singleTask.printTask(taskIndex);
             taskIndex++;
         }
     }
@@ -26,12 +63,13 @@ public class Tasks {
         try {
             System.out.println("Please enter task status!\n");
             for (taskStatus status : taskStatus.values()) {
-                System.out.println(status.getString() + "," );
+                System.out.print(status.getString() + ", " );
             }
             taskStatus userInputTaskStatus = taskStatus.valueOf(Libs.Input.next().toUpperCase());
             System.out.println("Enter task name.");
             String userInputTaskName = Libs.captureSentence();
             Task newTask = new Task(userInputTaskName, userInputTaskStatus);
+
             tasks.add(newTask);
         } catch (RuntimeException e) {
             System.out.println("Failed to add new task. Did you enter the task status correctly?");
@@ -45,7 +83,7 @@ public class Tasks {
             System.out.println("If you don't want to change the name or status. Just enter " + Libs.NOCHANGE);
             System.out.println("Please enter task status!");
             for (taskStatus status : taskStatus.values()) {
-                System.out.println(status.getString() + "," );
+                System.out.print(status.getString() + ", " );
             }
 
             taskStatus userInputTaskStatus = taskStatus.valueOf(Libs.Input.next().toUpperCase());
@@ -63,7 +101,7 @@ public class Tasks {
     private void finishTask(int index) {
         try {
             Task selectedTask = tasks.get(index);
-            selectedTask.taskStat = Libs.CHECK_OFF_TASK;
+            selectedTask.finishTask();
         } catch (Exception e) {
             System.out.println("Can't finish something that doesn't exist");
         }
@@ -72,19 +110,16 @@ public class Tasks {
     private void showTask(int index) {
         try {
             Task selectedTask = tasks.get(index);
-            printTask(index, selectedTask);
+            selectedTask.printTask(index);
         } catch(IndexOutOfBoundsException e) {
             System.out.println("The task does not exist!");
         }
     }
 
-    private void printTask(int index, Task singleTask) {
-        System.out.printf("%d - %s - %s \n", index, singleTask.taskName, singleTask.taskStat);
-    }
 
     public void presentTaskActions() {
         for (taskActions action : taskActions.values()) {
-            System.out.println(action.getString() + "," );
+            System.out.print(action.getString() + ", " );
         }
         String userInputTask = Libs.Input.next();
         try {
@@ -123,7 +158,8 @@ public class Tasks {
                     presentTaskActions();
                     break;
                 case EXIT:
-                    System.out.println("Exiting tasks.");
+                    System.out.println("Exiting and Saving tasks.");
+                    Libs.saveToImportFile(importedFile, tasks);
                     break;
             }
         } catch (IllegalArgumentException e) {

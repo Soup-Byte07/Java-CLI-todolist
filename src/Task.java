@@ -27,4 +27,12 @@ public class Task {
             this.taskStat = status;
         }
     }
+
+    public void printTask(int index) {
+        System.out.printf("%d - %s - %s \n", index, this.taskName, this.taskStat);
+    }
+
+    public void finishTask() {
+        this.taskStat = Libs.CHECK_OFF_TASK;
+    }
 }
